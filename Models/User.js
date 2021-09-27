@@ -29,20 +29,21 @@ const UserSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: true,
+      required: [true, "Please enter your name"],
     },
     hash_password: {
       type: String,
-      required: true,
+      required: [true, "Please enter your password"],
+      minLength: [4, "Your password must be longer than 6 characters"],
     },
     phone: {
       type: Number,
       required: true,
     },
-    user: {
+    role: {
       type: String,
       required: true,
-      role: ["user", "admin"],
+      enum: ["user", "admin"],
       default: "user",
     },
   },

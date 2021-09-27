@@ -1,26 +1,14 @@
 const Todo = require("../Models/Todo");
-// const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
-// const ErrorHandler = require("../utils/errorHandler");
-///// Add todo /////////
-
-// exports.addtodo = catchAsyncErrors(async (req, res) => {
-//   const todo = await Todo.create(req.body);
-
-//   res.status(200).json({
-//     success: true,
-//     todo,
-//   });
-// });
-
 exports.addtodo = async (req, res) => {
-  const { username, title, category } = req.body;
+  const { userId, username, title, category, status = false } = req.body;
   /// category = shudld be this value "task", "hobby", "work"],
   //console.log(title, category);
-
   const todo = new Todo({
     username,
     title,
     category,
+    userId,
+    status,
   });
 
   todo.save((error, todo) => {
@@ -45,13 +33,15 @@ exports.getalltodo = async (req, res) => {
   try {
     //////////////////////// Get all Todo //////////////////////////////
     ///////////////// sorting Todo by createdAt //////////////////////////////
+    console.log(req.params.id);
+    let userId = req.user._id; // its get from middlware
     let key = [];
     for (let k in req.query) {
       key.push(k);
     }
     if (key.length == 0) {
-      console.log("should have no query string");
-      const todo = await Todo.find().sort({ createdAt: -1 });
+      console.log("should have no query string", req.user._id);
+      const todo = await Todo.find({ userId: userId }).sort({ createdAt: -1 });
 
       ///////////////// chcke todo  data found or Not//////////////////////////////
       if (todo.length == 0) {
@@ -106,28 +96,9 @@ exports.getalltodo = async (req, res) => {
 
 /////////////// Get by Todo Id //////////////
 
-// exports.gettodoById = catchAsyncErrors(async (req, res, next) => {
-//   const todo = await Todo.findById(req.params.id);
-
-//   if (!todo) {
-//     // return next(new ErrorHandler("Todo not found with this id", 404));
-//     res
-//       .status(404)
-//       .json({
-//         success: true,
-//         message: `Todo Not found this id:${req.params.id}`,
-//       });
-//   }
-
-//   res.status(200).json({
-//     success: true,
-//     todo,
-//   });
-// });
-
 exports.gettodoById = async (req, res) => {
   let id = req.params.id;
-
+  console.log(id);
   try {
     const todo = await Todo.findById({ _id: id });
 
@@ -189,3 +160,5 @@ exports.deletetodo = async (req, res) => {
     res.status(204).json({ success: false, message: "not deleted todo", err });
   }
 };
+
+/////////////// All Admin Operatin Below //////////////

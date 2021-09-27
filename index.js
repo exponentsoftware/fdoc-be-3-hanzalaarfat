@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const todoRoute = require("./router/todorouter");
 const userRoute = require("./router/userRouter");
-
+const adminRoute = require("./router/adminRoute");
 const app = express();
 
 app.use(express.json());
@@ -15,16 +15,13 @@ app.use(express.json());
 //   // res.render("home");
 // });
 
-app.use("/todo", todoRoute);
+// app.use("/todo", todoRoute);
 app.use("/user", userRoute);
+app.use("/admin", adminRoute);
 
 // console.log(process.env.MONGO_DB_URI);
 // DB conection
-mongoose.connect(process.env.MONGO_DB_URI, {
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true,
-  // useFindAndModify: false,
-});
+mongoose.connect(process.env.MONGO_DB_URI, {});
 mongoose.connection
   .once("open", function () {
     console.log("Connected to Mongo");

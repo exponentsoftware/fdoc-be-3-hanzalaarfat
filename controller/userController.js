@@ -3,7 +3,7 @@ const User = require("../Models/User");
 const jwt = require("jsonwebtoken");
 
 exports.signup = async (req, res) => {
-  const { username, email, password, phone } = req.body;
+  const { username, email, password, phone, role = "user" } = req.body;
   if (!username || !email || !password || !phone) {
     return res.status(422).json({ err: "plz filled properly" });
   }
@@ -20,6 +20,7 @@ exports.signup = async (req, res) => {
       email,
       password,
       phone,
+      role,
     });
     /// pre save password hashing in user schema
     const userRegister = await user.save();
@@ -39,18 +40,19 @@ exports.login = async (req, res) => {
   if (!email || !password) {
     return res.status(422).json({ err: "plz fill data properly" });
   }
-
+  console.log(email, password);
   User.findOne({ email: email }).exec((err, user) => {
     if (err) {
       return res.status(400).json({ err });
     }
     if (user) {
+      console.log(user);
       if (user.authenticate(password)) {
         const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY, {
           expiresIn: "24h",
         });
         const { _id, email, name } = user;
-        res.status(200).json({ token, _id, email, name });
+        res.status(200).json({ token, _id, email, name, user });
       } else {
         return res.status.json({
           message: "incoreet usr or email",
